@@ -802,4 +802,78 @@ new MutationObserver(sync).observe(document.documentElement,{attributes:true,att
     if(feedback)feedback.textContent=document.documentElement.lang==='en'?'Sending request. Complete any verification shown by the email service.':'Enviando solicitud. Complete cualquier verificación que solicite el servicio de correo.';
   });
 })();
-</script></body></html>
+</script>
+<!-- ESI v74: navegación estable de cotizaciones y fondos coherentes -->
+<style id="esi-v74-correcciones">
+:root{--esi-photo-bg:#dce7f2;--esi-panel-bg:#e6eff8}
+/* Botones de cotización: azul rey consistente, incluso los que antes eran outline. */
+button.btn.outline, a.btn.outline, .actions .btn.outline,
+button[onclick*="quote("], #alarma-quote, #esi-software-quote,
+a[href="#contacto"].btn, .platform-cta {
+ background:#0759bc!important;color:#fff!important;border:2px solid #0759bc!important;
+ box-shadow:0 3px 9px rgba(0,52,120,.12);text-decoration:none;
+}
+button.btn.outline:hover,a.btn.outline:hover,button[onclick*="quote("]:hover,
+#alarma-quote:hover,#esi-software-quote:hover,a[href="#contacto"].btn:hover{
+ background:#064795!important;border-color:#064795!important;color:#fff!important;
+}
+button.btn.outline span,button[onclick*="quote("] span{color:#fff!important}
+/* Marcos de fotos y espacios circundantes, sin filtros sobre los productos. */
+.photo-product,.visual.photo-product,.esi-v41-photo,.esi-catalog-visual,
+.esi-catalog-photo,.esi-fleet-v56 figure,.esi-fleet-v56 figure img,
+.technical-grid figure,.technical-grid img,.platform-main,
+.platform-gallery figure,.platform-gallery figure img,
+.esi-specialty-card img,.esi-catalog-v54 .esi-catalog-visual,
+#productos .products-heading-photo,#productos .products-heading-photo img,
+#productos .photo-product img,#productos .new-image-gallery figure,
+#productos .new-image-gallery img,#galeria-tecnica .esi-catalog-visual,
+#rastreo .esi-fleet-gallery img,#rastreo .esi-fleet-hero-figure img,
+#plataformas .platform-gallery figure img,
+#plataformas .platform-gallery figure:last-child img{
+ background-color:var(--esi-photo-bg)!important;
+}
+.card,.tile,.esi-specialty-card,.esi-catalog-card,.esi-model,.esi-fleet-features article{
+ background-color:var(--esi-panel-bg)!important;
+}
+#quoteform{scroll-margin-top:110px}
+</style>
+<script id="esi-v74-quote-navigation">
+(function(){
+ function toForm(product){
+   const form=document.getElementById('quoteform');
+   const select=document.getElementById('producto');
+   if(!form)return;
+   if(product && select){
+     const options=Array.from(select.options);
+     const match=options.find(o=>o.value===product)||options.find(o=>o.textContent.toLowerCase().includes(product.toLowerCase()));
+     if(match)select.value=match.value;
+     else{
+       const other=options.find(o=>o.value==='Otro servicio');
+       if(other)select.value=other.value;
+       const msg=document.getElementById('mensaje');
+       if(msg&&!msg.value.trim())msg.value='Cotización para: '+product;
+     }
+   }
+   // Ir directamente al formulario, no al comienzo de Contactos internacionales.
+   const header=document.querySelector('header');
+   const offset=(header?header.getBoundingClientRect().height:0)+16;
+   const y=window.scrollY+form.getBoundingClientRect().top-offset;
+   window.scrollTo({top:Math.max(0,y),behavior:'instant'});
+ }
+ window.quote=toForm;
+ // Captura primero para impedir que los manejadores anteriores cambien el destino.
+ document.addEventListener('click',function(e){
+   const el=e.target.closest('a[href="#contacto"],button[onclick*="quote("],#alarma-quote');
+   if(!el)return;
+   e.preventDefault();e.stopImmediatePropagation();
+   let product=null;
+   const call=el.getAttribute('onclick')||'';
+   const m=call.match(/quote\(\s*['"]([^'"]+)['"]\s*\)/);
+   if(m)product=m[1];
+   if(el.id==='esi-software-quote')product='Desarrollo de software y soluciones digitales';
+   if(el.id==='alarma-quote')product='Alarmas automonitoreadas por APP';
+   toForm(product);
+ },true);
+})();
+</script>
+</body></html>
